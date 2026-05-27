@@ -84,14 +84,16 @@ export default function CustomCursor() {
     <>
       {/* Outer Spring Ring */}
       <motion.div
-        className="fixed top-0 left-0 w-8 h-8 rounded-full border border-black dark:border-white pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
+        className="fixed top-0 left-0 w-8 h-8 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
         style={{
           x: outerX,
           y: outerY,
+          borderColor: "var(--text-color)",
+          borderStyle: "solid",
         }}
         animate={{
           scale: isClicking ? 0.8 : isHovered ? 1.6 : 1,
-          backgroundColor: isHovered ? "rgba(var(--text-color), 0.05)" : "rgba(0, 0, 0, 0)",
+          backgroundColor: isHovered ? "rgba(128, 128, 128, 0.08)" : "rgba(0, 0, 0, 0)",
           borderWidth: isHovered ? "2px" : "1px",
         }}
         transition={{ duration: 0.15, ease: "easeOut" }}
@@ -99,10 +101,11 @@ export default function CustomCursor() {
 
       {/* Inner Pinpoint Dot (Locked to exact mouse cursor) */}
       <motion.div
-        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full bg-black dark:bg-white pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
+        className="fixed top-0 left-0 w-1.5 h-1.5 rounded-full pointer-events-none z-[9999] -translate-x-1/2 -translate-y-1/2"
         style={{
           x: mouseX,
           y: mouseY,
+          backgroundColor: "var(--text-color)",
         }}
         animate={{
           scale: isHovered ? 0 : 1,
