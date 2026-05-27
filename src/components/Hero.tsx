@@ -14,7 +14,7 @@ export default function Hero() {
 
   useEffect(() => {
     // Authenticate locally inside landing view
-    setIsAdmin(localStorage.getItem("admin_token") === "romel-ligligon-authorized-token");
+    setIsAdmin(!!localStorage.getItem("admin_token"));
   }, []);
 
   const handleImageUpdate = () => {

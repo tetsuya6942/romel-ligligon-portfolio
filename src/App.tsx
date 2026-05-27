@@ -23,7 +23,7 @@ function AppContent() {
 
   // Administrative verification state
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
-    return localStorage.getItem("admin_token") === "romel-ligligon-authorized-token";
+    return !!localStorage.getItem("admin_token");
   });
 
   // Fetch server / database connection state
