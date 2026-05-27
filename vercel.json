@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "/api/index.ts"
+    },
+    {
+      "source": "/((?!assets/|romel.jpg|vite.svg|local_db.json).*).*",
+      "destination": "/index.html"
+    }
+  ]
+}
