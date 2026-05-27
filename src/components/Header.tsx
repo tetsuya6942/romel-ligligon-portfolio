@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { ServerStatus } from "../types";
-import { Database, Plus, RefreshCw, Layers } from "lucide-react";
+import { Database, Plus, RefreshCw, Layers, Sun, Moon } from "lucide-react";
 import { motion, AnimatePresence } from "motion/react";
 
 interface HeaderProps {
@@ -10,6 +10,8 @@ interface HeaderProps {
   onRefreshStatus: () => void;
   projectsCount: number;
   isAdmin: boolean;
+  isDark: boolean;
+  onToggleTheme: () => void;
 }
 
 export default function Header({
@@ -17,7 +19,9 @@ export default function Header({
   status,
   onRefreshStatus,
   projectsCount,
-  isAdmin
+  isAdmin,
+  isDark,
+  onToggleTheme
 }: HeaderProps) {
   const [currentTime, setCurrentTime] = useState("");
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -125,6 +129,16 @@ export default function Header({
                 <span>Add Work</span>
               </button>
             )}
+
+            {/* Stark Theme Toggle */}
+            <button
+              onClick={onToggleTheme}
+              className="flex items-center justify-center p-1.5 border border-black dark:border-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all duration-300 ml-2 cursor-pointer h-7 w-7 shrink-0"
+              aria-label="Toggle theme mode"
+              title={isDark ? "Activate Light Mode" : "Activate Dark Mode"}
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+            </button>
           </div>
 
           {/* Mobile Hamburger Button */}
@@ -195,6 +209,15 @@ export default function Header({
                   <span>Add Work</span>
                 </button>
               )}
+
+              {/* Mobile theme toggle */}
+              <button
+                onClick={onToggleTheme}
+                className="flex items-center gap-2 font-mono text-[10px] uppercase tracking-widest border border-black dark:border-white hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black px-4 py-2 cursor-pointer"
+              >
+                {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+                <span>{isDark ? "Light Mode" : "Dark Mode"}</span>
+              </button>
 
             </motion.div>
           </motion.div>

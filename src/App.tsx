@@ -5,6 +5,8 @@ import Header from "./components/Header";
 import Footer from "./components/Footer";
 import AddProjectModal from "./components/AddProjectModal";
 import BackgroundAnimation from "./components/BackgroundAnimation";
+import CustomCursor from "./components/CustomCursor";
+import { ToastProvider, useToast } from "./hooks/useToast";
 import { motion, AnimatePresence } from "motion/react";
 
 // Page component imports
@@ -17,6 +19,7 @@ import AdminPage from "./pages/AdminPage";
 
 function AppContent() {
   const location = useLocation();
+  const toast = useToast();
   const [projects, setProjects] = useState<Project[]>([]);
   const [serverStatus, setServerStatus] = useState<ServerStatus | null>(null);
   const [isAddOpen, setIsAddOpen] = useState(false);
@@ -25,6 +28,26 @@ function AppContent() {
   const [isAdmin, setIsAdmin] = useState<boolean>(() => {
     return !!localStorage.getItem("admin_token");
   });
+
+  // Core theme management state (synchronizes light/dark modes)
+  const [isDark, setIsDark] = useState<boolean>(() => {
+    return localStorage.getItem("theme") === "dark";
+  });
+
+  useEffect(() => {
+    const root = window.document.documentElement;
+    if (isDark) {
+      root.classList.add("dark");
+      localStorage.setItem("theme", "dark");
+    } else {
+      root.classList.remove("dark");
+      localStorage.setItem("theme", "light");
+    }
+  }, [isDark]);
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+  };
 
   // Fetch server / database connection state
   const fetchStatus = async () => {
@@ -69,11 +92,14 @@ function AppContent() {
         body: JSON.stringify(projectData)
       });
       if (res.ok) {
+        toast.show("Portfolio project registered successfully!", "success");
         await loadProjects();
         return true;
       }
+      toast.show("Failed to register project in database.", "error");
       return false;
     } catch (err) {
+      toast.show("Fatal error saving portfolio project.", "error");
       console.error("Failed to connect API to save project:", err);
       return false;
     }
@@ -81,6 +107,9 @@ function AppContent() {
 
   return (
     <div className="min-h-screen bg-white text-black flex flex-col relative select-none">
+      {/* Premium custom lagging spring cursor */}
+      <CustomCursor />
+
       {/* Luxury paper high-end ambient noise map overlay */}
       <div className="paper-texture" />
 
@@ -88,7 +117,7 @@ function AppContent() {
       <BackgroundAnimation />
 
       {/* Styled vertical rail for Clean Minimalism layout */}
-      <div className="fixed right-6 top-1/2 -translate-y-1/2 rotate-90 origin-right pointer-events-none hidden xl:block font-mono text-[9px] uppercase tracking-[0.5em] text-black/55 select-none z-[49]">
+      <div className="fixed right-6 top-1/2 -translate-y-1/2 rotate-90 origin-right pointer-events-none hidden xl:block font-mono text-[9px] uppercase tracking-[0.5em] text-black/55 dark:text-white/55 select-none z-[49]">
         ESTABLISHED TWO THOUSAND TWENTY SIX
       </div>
 
@@ -99,6 +128,8 @@ function AppContent() {
         onRefreshStatus={fetchStatus}
         projectsCount={projects.length}
         isAdmin={isAdmin}
+        isDark={isDark}
+        onToggleTheme={toggleTheme}
       />
 
       {/* Main Routed Area */}
@@ -138,8 +169,10 @@ function AppContent() {
 
 export default function App() {
   return (
-    <Router>
-      <AppContent />
-    </Router>
+    <ToastProvider>
+      <Router>
+        <AppContent />
+      </Router>
+    </ToastProvider>
   );
 }

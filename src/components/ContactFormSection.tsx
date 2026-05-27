@@ -1,7 +1,9 @@
 import React, { useState } from "react";
-import { Send, CheckCircle2, AlertCircle, ArrowUpRight, Award, Mail, Sparkles } from "lucide-react";
+import { Send, CheckCircle2, AlertCircle, ArrowUpRight, Award } from "lucide-react";
+import { useToast } from "../hooks/useToast";
 
 export default function ContactFormSection() {
+  const toast = useToast();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [message, setMessage] = useState("");
@@ -11,7 +13,9 @@ export default function ContactFormSection() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !email || !message) {
-      setStatus({ type: "error", text: "Please supply all narrative fields." });
+      const errMsg = "Please supply all narrative fields.";
+      setStatus({ type: "error", text: errMsg });
+      toast.show(errMsg, "error");
       return;
     }
 
@@ -29,21 +33,28 @@ export default function ContactFormSection() {
       setLoading(false);
 
       if (response.ok) {
+        const successMsg = data.warning 
+          ? `Transmission registered! (Local Fallback: ${data.warning})`
+          : "Brief successfully submitted directly to PostgreSQL database client!";
+        
         setStatus({
           type: "success",
-          text: data.warning 
-            ? `Transmission registered! (Local Fallback: ${data.warning})`
-            : "Brief successfully submitted directly to PostgreSQL database client!"
+          text: successMsg
         });
+        toast.show("Brief transmission secured and logged!", "success");
         setName("");
         setEmail("");
         setMessage("");
       } else {
-        setStatus({ type: "error", text: data.error || "Failed to deliver submission." });
+        const errMsg = data.error || "Failed to deliver submission.";
+        setStatus({ type: "error", text: errMsg });
+        toast.show(errMsg, "error");
       }
     } catch (err: any) {
+      const catchMsg = "Fatal error delivering submission brief to Express API endpoint.";
       setLoading(false);
-      setStatus({ type: "error", text: "Fatal error delivering submission brief to Express API endpoint." });
+      setStatus({ type: "error", text: catchMsg });
+      toast.show(catchMsg, "error");
     }
   };
 

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Lock, Unlock, LogOut, ArrowRight, ShieldCheck, Database } from "lucide-react";
 import PageTransition from "../components/PageTransition";
+import { useToast } from "../hooks/useToast";
 
 interface AdminPageProps {
   isAdmin: boolean;
@@ -9,6 +10,7 @@ interface AdminPageProps {
 }
 
 export default function AdminPage({ isAdmin, setIsAdmin }: AdminPageProps) {
+  const toast = useToast();
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -35,19 +37,25 @@ export default function AdminPage({ isAdmin, setIsAdmin }: AdminPageProps) {
         localStorage.setItem("admin_token", data.token);
         setIsAdmin(true);
         setPassword("");
+        toast.show("Administrative session successfully authenticated!", "success");
         navigate("/");
       } else {
-        setError(data.error || "Incorrect administrative credentials.");
+        const errMsg = data.error || "Incorrect administrative credentials.";
+        setError(errMsg);
+        toast.show(errMsg, "error");
       }
     } catch (err) {
       setLoading(false);
-      setError("Fatal network error connecting to admin service.");
+      const netMsg = "Fatal network error connecting to admin service.";
+      setError(netMsg);
+      toast.show(netMsg, "error");
     }
   };
 
   const handleLogout = () => {
     localStorage.removeItem("admin_token");
     setIsAdmin(false);
+    toast.show("Administrative session terminated successfully.", "success");
     navigate("/");
   };
 

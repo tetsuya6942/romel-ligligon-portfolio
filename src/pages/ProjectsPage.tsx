@@ -4,14 +4,17 @@ import { AnimatePresence } from 'motion/react';
 import { useProjects } from '../hooks/useProjects';
 import { Project } from '../types';
 import ProjectCard from '../components/ProjectCard';
+import SkeletonCard from '../components/SkeletonCard';
 import ProjectDetailModal from '../components/ProjectDetailModal';
 import PageTransition from '../components/PageTransition';
+import { useToast } from '../hooks/useToast';
 
 interface ProjectsPageProps {
   isAdmin: boolean;
 }
 
 export default function ProjectsPage({ isAdmin }: ProjectsPageProps) {
+  const toast = useToast();
   const {
     projects,
     loading,
@@ -29,9 +32,15 @@ export default function ProjectsPage({ isAdmin }: ProjectsPageProps) {
 
   const onDeleteProject = async (id: number) => {
     setIsDeleting(true);
-    await handleDeleteProject(id);
-    setSelectedProject(null);
-    setIsDeleting(false);
+    try {
+      await handleDeleteProject(id);
+      toast.show("Portfolio project successfully removed from database.", "success");
+      setSelectedProject(null);
+    } catch (err) {
+      toast.show("System error removing portfolio project.", "error");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   const handleNextProject = () => {
@@ -99,13 +108,13 @@ export default function ProjectsPage({ isAdmin }: ProjectsPageProps) {
 
         {/* Loading / Empty / Project Grid */}
         {loading ? (
-          <div className="py-32 flex flex-col items-center justify-center gap-3">
-            <div className="w-8 h-8 border-2 border-black border-t-transparent rounded-full animate-spin" />
-            <p className="font-mono text-xs uppercase tracking-widest animate-pulse">
-              Syncing dynamic database catalog...
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-x-8 gap-y-16">
+            {Array.from({ length: 6 }).map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))}
           </div>
-        ) : filteredProjects.length === 0 ? (
+        )
+ : filteredProjects.length === 0 ? (
           <div className="py-24 text-center border border-dashed border-black/15">
             <p className="font-mono text-xs uppercase tracking-widest text-black/50 mb-4">
               No matching architectural works identified.
