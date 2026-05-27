@@ -5,7 +5,7 @@
       "destination": "/api/index.ts"
     },
     {
-      "source": "/((?!assets/|romel.jpg|vite.svg|local_db.json).*).*",
+      "source": "/((?!api).*)" ,
       "destination": "/index.html"
     }
   ]
